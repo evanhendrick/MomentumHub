@@ -1,68 +1,100 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import axios from "axios"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const submitSignin = createAsyncThunk(
+  "auth/submitSignin",
+  async (body, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("http://localhost:8000/signin", body);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("currentUser", JSON.stringify(response.data.user));
+      console.log("submit signin failed>", response.data)
+      return response.data;
+    } catch (err) {
+      console.log("Sign-in error:", err.response.data.error);
+
+      if (axios.isAxiosError(err) && err.response) {
+        console.log("Axios err:", err.response.data.error)
+        return rejectWithValue(err.response.data.error || "Sign-in failed");
+      }
+
+      return rejectWithValue("Something went wrong");
+    }
+  }
+);
 
 export const submitSignup = createAsyncThunk(
-  "auth/submitSignup", 
-  async(body, {rejectWithValue}) => {
-  try {
-    await console.log("submit signup received",body)
-    const response = await axios.post("http://localhost:8000/signin", body)
-    await console.log("signin async thunk", response.data)
-    // localStorage.setItem('token', response.data.token)
-    return response.data
-  } catch(err) {
-    return rejectWithValue(err)
+  "auth/submitSignup",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("http://localhost:8000/signup", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-//  return body
-})
+);
 
-export const protectedFetch = createAsyncThunk("auth/protectedFetch", async (token) => {
-try {
-  await console.log("request sent")   
-  const response = await axios.get("http://localhost:8000/protected", 
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-        // "Bearer" + token
-      }
+export const protectedFetch = createAsyncThunk(
+  "auth/protectedFetch",
+  async (token) => {
+    try {
+      const response = await axios.get("http://localhost:8000/protected", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (err) {
+      return err;
+    }
   }
-)
-  return response.data
-} catch(err) {
-  return err
-}
-})
+);
 
 const initialState = {
-  isAuthenticated: localStorage.getItem('token') || '',
-  error: '',
-  data: ''
-}
+  currentUser: {},
+  isAuthenticated: "Client is not authenticated",
+  error: "",
+  data: "",
+};
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    resetError: (state) => {
+      state.error = null
+    }
+  },
   extraReducers: (builder) => {
     builder
-    .addCase(submitSignup.fulfilled, (state, action) => {
-      //>> want to know if wwe should assign localStorage the token that we received from API?
-      // state.isAuthenticated = localStorage.getItem("token") || ""
-      console.log("successful retrieval", action.payload)
-      state.isAuthenticated = action.payload
-      state.error = ''
-    })
-    .addCase(submitSignup.rejected, (state, action) => {
-      // console.log("retrieval failure", action.payload.response.data.error)
-      const resErr = action.payload.response.data.error
-      state.isAuthenticated = false
-      state.error = resErr
-    })
-    .addCase(protectedFetch.fulfilled, (state, action) => {
-      state.data = action.payload
-      // need to remove lcoalstorage item
-    })
-  }
-})
+      .addCase(submitSignin.fulfilled, (state, action) => {
+        const user = action.payload.user;
+        console.log(".addCase", user);
+
+        state.isAuthenticated = "Authenticated";
+        state.error = null;
+        state.currentUser = action.payload.user;
+      })
+      .addCase(submitSignin.rejected, (state, action) => {
+        // const resErr = action.payload.response.data.error;
+        // const resErr = action.payload
+        console.log("submitSignin.rejected", action)
+        state.isAuthenticated = false;
+        state.error = action.payload;
+      })
+      .addCase(protectedFetch.fulfilled, (state, action) => {
+        state.data = action.payload;
+      })
+      .addCase(submitSignup.fulfilled, (state, action) => {
+        state.error = action.payload.message;
+      })
+      .addCase(submitSignup.rejected, (state, action) => {
+        state.error = action.payload.response.data.message;
+      });
+  },
+});
 
 export default authSlice.reducer;
+// module.exports.authActions = authSlice.actions
+export const authActions = authSlice.actions

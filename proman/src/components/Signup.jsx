@@ -3,104 +3,137 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { DevTool } from "@hookform/devtools";
 import { useDispatch, useSelector } from "react-redux";
-import { submitSignup } from "../app/slices/authSlice"
-import { protectedFetch } from "../app/slices/authSlice";
+import { submitSignin } from "../app/slices/authSlice";
+import { Link } from "react-router-dom";
+import _ from "lodash";
+import { authActions } from "../app/slices/authSlice";
 
-export default function Signup () {
+export default function Signup() {
+  const form = useForm();
+  const { register, control, handleSubmit, formState, clearErrors } = form;
+  const { errors } = formState;
+
   const authState = useSelector((state) => {
-    return state.storeAuth
-  })
+    return state.storeAuth;
+  });
 
-  console.log("auth state, retrieved by redux from localStorage", authState)
-  const token = authState.isAuthenticated
-
-  const form = useForm()
-  const {register, control, handleSubmit, formState } = form
-  const { errors } = formState
-
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    event.preventDefault();
+    // event.preventDefault();
     try {
-      dispatch(submitSignup(data)).then(() => {
-        if(authState.isAuthenticated){
-          navigate('/user')
-        }
-        // else if(authState.error) {
-        //   console.log(authState.error)
-        //   // doesn't really work. Will have to figure something else out for this
-        //   return (
-        //     <div>
-        //       <p>{authState.error}</p>
-        //     </div>
-        // )
-        // }
-      })
+      const res = await dispatch(submitSignin(data));
+      if (res.type === "auth/submitSignin/fulfilled") {
+        console.log("Signin fulfilled!");
+        localStorage.getItem("token");
+        navigate("/user");
+      } else {
+        console.log("res.type !== fulfilled");
+      }
     } catch (err) {
-      console.log("try/catch error>> ", err)
-      return err
+      console.log("res.type !== fulfilled");
+      return err;
+    }
+  };
+
+  const handleClearErrors = () => {
+    if(authState.error){
+
+      clearErrors("username")
+      clearErrors("password")
+      dispatch(authActions.resetError())
+    } else {
+      console.log("no errors to clear")
     }
   }
 
-  // pass in token
-  const submitToken = () => {
-    dispatch(protectedFetch(token))
-  }
-
-  const removeToken = () => {
-    localStorage.removeItem('token')
-  }
-
   return (
-    <div>
-      <button
-      onClick={() => {submitToken()}}
-      >Send token</button>
-      <button
-      onClick={() => {removeToken()}}
-      >remove Token</button>
-      {authState.error ? <div className="errors">{authState.error}</div> : null}
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <label htmlFor="username">username</label>
-        <input
-        type="text"
-        id="username"
-        {...register("username", {
-            required: {
-              value: true,
-              message: "Must enter a username"
-            },
-            validate: {
-              notAdmin: (fieldValue) => {
-                return fieldValue !== "admin" || "You cannot have this username"
-              }
-            }
-          })
-        }
-        ></input>
-        <p className="errors">{errors.username?.message}</p>
+    <div className="container">
+      <div className="row">
+        <div className="col-3"></div>
+        <div className="col-6">
+          <h3>Welcome to Momentum Hub!</h3>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-3"></div>
+        <div className="col-6">
+          <form
+            className="form-control"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <h5>Login:</h5>
+            
+            <div className="mb-3">
+              <label htmlFor="username" className="form-label">
+                Username
+              </label>
+              <input
+                className="form-control"
+                type="text"
+                id="username"
+                {...register("username", {
+                  required: {
+                    value: true,
+                    message: "Must enter a username",
+                  },
+                  validate: {
+                    notAdmin: (fieldValue) => {
+                      return (
+                        fieldValue !== "admin" ||
+                        "You cannot have this username"
+                      );
+                    },
+                  },
+                })}
+                onChange={(e) => {
+                  register("username").onChange(e)
+                  handleClearErrors();
+                }}
+              ></input>
+              {errors.username ? (
+                <p className="alert alert-danger">{errors.username?.message}</p>
+              ) : null}
+            </div>
 
-        <label htmlFor="password">Password</label>
-        <input
-        // add onClick to show the password...?
-        type="password"
-        id="password"
-        // how to make password minimum 16 characters, w/1 caps letter and 1 #, and 1 special character (!@#$%^&*)
-        {...register('password', {
-            required: {
-              value: true,
-              message: "Must enter a password"
-            }
-          }
-        )}
-        ></input>
-        <p className="errors">{errors.password?.message}</p>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                className="form-control"
+                type="password"
+                id="password"
+                {...register("password", {
+                  required: {
+                    value: true,
+                    message: "Must enter a password",
+                  },
+                })}
+                onChange={(e) => {
+                  register("password").onChange(e)
+                  console.log(e.target.value)
+                  handleClearErrors();
+                }}
+              ></input>
+              {errors.password ? (
+                <p className="alert alert-danger">{errors.password?.message}</p>
+              ) : null}
+              {authState.error ? <p className="alert alert-danger">{authState.error}</p> : null}
+            </div>
 
-        <button>Submit</button>
-        {/* <DevTool control={control}/> */}
-      </form>
+            <button className="btn btn-success">Submit</button>
+
+            <h3 className="mt-3">or:</h3>
+
+            <div className="mb-3 mt-3 alert alert-info">
+              <Link to="/signup">Create a new Account</Link>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

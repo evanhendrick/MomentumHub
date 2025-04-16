@@ -1,18 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-// import { update } from "lodash";
 
 const boardsUrl = "http://localhost:8000/boards";
-// const boardUrl = "http://localhost:8000/boards/:board";
 
-export const fetchBoards = createAsyncThunk("board/fetchBoards", async () => {
-  try {
-    const response = await axios.get(boardsUrl);
-    return response.data;
-  } catch (err) {
-    return err;
+export const fetchBoards = createAsyncThunk(
+  "board/fetchBoards",
+  async (userId) => {
+    let token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(boardsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { userId },
+      });
+      return response.data;
+    } catch (err) {
+      return err;
+    }
   }
-});
+);
 
 export const fetchBoard = createAsyncThunk(
   "board/fetchBoard",
@@ -30,11 +37,12 @@ export const fetchBoard = createAsyncThunk(
 
 export const fetchPostNewBoard = createAsyncThunk(
   "board/fetchPostNewBoard",
-  async (boardname) => {
+  async ({ text, userId, date }) => {
     try {
       const data = {
-        name: boardname,
-        date: new Date(),
+        name: text,
+        userId,
+        date: date,
       };
       const response = await axios.post(
         "http://localhost:8000/save-data",
@@ -92,7 +100,6 @@ const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {},
-  // add edge cases and errors
   extraReducers: (builder) => {
     builder
       .addCase(fetchBoards.fulfilled, (state, action) => {

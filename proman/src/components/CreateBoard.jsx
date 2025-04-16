@@ -1,64 +1,92 @@
 import React from "react";
-import { useState } from "react";
-import { useDispatch, } from "react-redux";
+// import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchPostNewBoard, fetchBoards } from "../app/slices/boardSlice";
+import { DevTool } from "@hookform/devtools";
 import { CiCirclePlus } from "react-icons/ci";
+import { useForm } from "react-hook-form";
 
 export const CreateBoard = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [boardName, setBoardName] = useState("");
+  // const [isVisible, setIsVisible] = useState(false);
+  // const [boardName, setBoardName] = useState("");
+  // const [date, setDate] = useState("");
+
+  const form = useForm();
+  const { register, reset, control, handleSubmit, formState } = form;
+  const { errors } = formState;
+
+  const authState = useSelector((state) => {
+    return state.storeAuth;
+  });
+
+  const currentUser = authState.currentUser;
+  const localUser = JSON.parse(localStorage.getItem("currentUser"));
 
   const dispatch = useDispatch();
 
-  const handleSetIsVisible = async () => {
-    if (isVisible === true) {
-      await postBoard();
-      setIsVisible(false);
-      setBoardName("");
-    } else {
-      setIsVisible(true);
+  const onSubmit = async (data) => {
+    event.preventDefault();
+    try {
+      await dispatch(
+        fetchPostNewBoard({
+          text: data.boardname,
+          userId: currentUser._id,
+          date: data.deadline,
+        })
+      );
+      await dispatch(fetchBoards(currentUser._id));
+      reset({ keepSubmitCount: true });
+    } catch (err) {
+      return err;
     }
-    await dispatch(fetchBoards());
-  };
-  console.log("visible", isVisible);
-  const postBoard = async () => {
-    await dispatch(fetchPostNewBoard(boardName));
   };
 
-  if (isVisible === true) {
-    return (
-      <div>
-        <input
-          type="text"
-          placeholder="Board Name"
-          onChange={(e) => {
-            setBoardName(e.target.value);
-          }}
-        ></input>
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            handleSetIsVisible();
-          }}
-          onKeyDown={handleSetIsVisible}
-        >
-          Create
-        </button>
+  return (
+    <div className="row">
+      <div className="col-3"></div>
+      <div className="col-6">
+        <form className="form-control" onSubmit={handleSubmit(onSubmit)}>
+          <h3>Create a new Board</h3>
+          <div className="mb-3">
+            <label htmlFor="boardname" className="form-label">
+              Board Name
+            </label>
+            <input
+              className="form-control"
+              type="text"
+              id="boardname"
+              {...register("boardname", {
+                required: {
+                  value: true,
+                  message: "You must create a name for your board",
+                },
+              })}
+            ></input>
+            {errors.boardname ? (
+              <p
+                className="alert alert-danger"
+              >
+                {errors.boardname?.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="deadline" className="form-label">
+              Deadline
+            </label>
+            <input
+              className="form-control"
+              type="date"
+              id="deadline"
+              {...register("deadline", {
+                required: false,
+              })}
+            ></input>
+          </div>
+          <button className="btn btn-primary">Create Board</button>
+          <DevTool control={control} />
+        </form>
       </div>
-    );
-  } else {
-    return (
-      <div>
-        <div>Create a new board</div>
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            handleSetIsVisible();
-          }}
-        >
-          Add Board
-        </button>
-      </div>
-    );
-  }
+    </div>
+  );
 };

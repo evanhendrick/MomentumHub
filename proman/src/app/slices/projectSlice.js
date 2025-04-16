@@ -55,7 +55,6 @@ export const updateProject = createAsyncThunk(
     };
 
     try {
-      console.log("update project thunk", body);
       const response = await axios.put(
         `http://localhost:8000/projects/${projId}`,
         body
@@ -67,7 +66,40 @@ export const updateProject = createAsyncThunk(
   }
 );
 
-// this will contain our whole data set (especially concerning tasks)
+export const projectTimerStart = createAsyncThunk(
+  "/projects/projectTimerStart",
+  async ({ projName, projId, toggleId }) => {
+    const body = {
+      projName,
+      projId,
+      toggleId,
+    };
+    try {
+      const response = await axios.post("http://localhost:8000/start", body);
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  }
+);
+
+export const projectTimerStop = createAsyncThunk(
+  "/projects/projectTimerStop",
+  async ({ projName, projId, timeEntryId }) => {
+    const body = {
+      projName,
+      projId,
+      timeEntryId,
+    };
+    try {
+      const response = await axios.patch("http://localhost:8000/stop", body);
+      return response.data
+    } catch (err) {
+      return err;
+    }
+  }
+);
+
 const initialState = {
   projects: [],
 };

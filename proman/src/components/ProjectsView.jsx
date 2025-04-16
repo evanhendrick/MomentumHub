@@ -9,6 +9,7 @@ import {
 import { TaskView } from "./TaskView";
 import _ from "lodash";
 import { FaTrashCan } from "react-icons/fa6";
+import { ProjectTimer } from "./ProjectTimer";
 
 export const ProjectsView = () => {
   const [projectText, setProjectText] = useState("");
@@ -23,14 +24,12 @@ export const ProjectsView = () => {
     return state.storeBoards.currBoard;
   });
   const currentProjects = useSelector((state) => {
-    return state.storeProjects.projects;
+    return state.storeProjects;
   });
 
   const handleGetCurrentProjects = () => {
     if (!currentBoard) {
-      return (
-        <div>no current board</div>
-      )
+      return <div>no current board</div>;
     } else {
       dispatch(fetchProjects(currentBoard._id));
     }
@@ -43,10 +42,8 @@ export const ProjectsView = () => {
   }, [currentBoard]);
 
   const handlePostProject = async () => {
-    if(_.isEmpty(projectText)){
-      console.log("project must have a name")
-      // state for input error
-      // setProjectText("Error: must enter a name")
+    if (_.isEmpty(projectText)) {
+      alert("project must have a name")
     } else {
       const data = {
         projectText: projectText,
@@ -81,21 +78,32 @@ export const ProjectsView = () => {
 
   const renderEditingMode = () => {
     return (
-      <div>
-        Currently in editing mode
-        <input
-          type="text"
-          value={editedText}
-          onChange={(e) => {
-            setEditedText(e.target.value);
-          }}
-        ></input>
+      <div className="container mt-4">
+        <div className="alert alert-info">Currently in editing mode</div>
+        <div className="mb-3">
+          <input
+            className="form-control"
+            type="text"
+            value={editedText}
+            onChange={(e) => {
+              setEditedText(e.target.value);
+            }}
+          ></input>
+        </div>
+
         <button
+          className="btn btn-primary me-2"
           onClick={() => {
             handleUpdateProject();
           }}
         >
           Update
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => setEditingMode(false)}
+        >
+          Cancel
         </button>
       </div>
     );
@@ -105,65 +113,84 @@ export const ProjectsView = () => {
     return renderEditingMode();
   }
 
-  if (!_.isEmpty(currentBoard) && _.isEmpty(currentProjects)) {
+  if (!_.isEmpty(currentBoard) && _.isEmpty(currentProjects.projects)) {
     return (
-      <div>
-        <div>
-          <b>{currentBoard.name}</b>
+      <div className="container mt-4">
+        <h4 className="mb-3">{currentBoard.name}</h4>
+        <div className="input-group mb-3">
+          <input
+            className="form-control"
+            type="text"
+            value={projectText}
+            placeholder="Enter project name"
+            onChange={(e) => setProjectText(e.target.value)}
+          ></input>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              handlePostProject();
+            }}
+          >
+            Create New Project
+          </button>
         </div>
-        <input
-          type="text"
-          value={projectText}
-          placeholder="Enter project name"
-          onChange={(e) => setProjectText(e.target.value)}
-        ></input>
-        <button
-          onClick={() => {
-            handlePostProject();
-          }}
-        >
-          Create New Project
-        </button>
-        <div>No projects for this board yet</div>
+        <div className="alert alert-warning">
+          No projects for this board yet
+        </div>
       </div>
     );
-  } else if (!_.isEmpty(currentBoard) && !_.isEmpty(currentProjects)) {
+  } else if (!_.isEmpty(currentBoard) && !_.isEmpty(currentProjects.projects)) {
     return (
-      <div>
-        <div>
-          <b>{currentBoard.name}</b>
+      <div className="container mt-4">
+        <h4 className="mb-3">{currentBoard.name}</h4>
+        <div className="input-group mb-4">
+          <input
+            className="form-control"
+            type="text"
+            value={projectText}
+            placeholder="Enter project name"
+            onChange={(e) => setProjectText(e.target.value)}
+          ></input>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              handlePostProject();
+            }}
+          >
+            Create New Project
+          </button>
         </div>
-        <input
-          type="text"
-          value={projectText}
-          placeholder="Enter project name"
-          onChange={(e) => setProjectText(e.target.value)}
-        ></input>
-        <button
-          onClick={() => {
-            handlePostProject();
-          }}
-        >
-          Create New Project
-        </button>
+
         <div>
-          <div className="row">
-            {currentProjects.map((proj) => {
+          <div className="row g-3">
+            {currentProjects.projects.map((proj) => {
               return (
-                <div className="col-3 project-column" key={proj._id}>
-                  <h3 className="project-header">{proj.name}</h3>
-                  <button onClick={() => handleEditingProject(proj)}>
-                    Edit
-                  </button>
-                  <button
-                    className="project-header"
-                    onClick={() => {
-                      handleDeleteProject(proj._id);
-                    }}
-                  >
-                    <FaTrashCan />
-                  </button>
-                  <TaskView proj={proj} />
+                <div className="col-md-4" key={proj._id}>
+                  <div className="card h-100 shadow-sm">
+                    <div className="card-body">
+                      <h5 className="card-title">{proj.name}</h5>
+                      <div className="d-flex justify-content-between align">
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => handleEditingProject(proj)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => {
+                            handleDeleteProject(proj._id);
+                          }}
+                        >
+                          <FaTrashCan />
+                        </button>
+                      </div>
+                      <hr />
+                      <TaskView proj={proj} />
+                      <hr />
+                      <ProjectTimer proj={proj}/>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -172,6 +199,12 @@ export const ProjectsView = () => {
       </div>
     );
   } else {
-    return <div>Loading...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="spinner-border text-primary" role="status">
+        </div>
+          <span className="text-primary">Loading...</span>
+      </div>
+    );
   }
 };

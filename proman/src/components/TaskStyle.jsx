@@ -17,11 +17,11 @@ export const TaskStyle = () => {
         </div>
         <div>
           {tasks.map((task) => {
-            return <li 
-            onClick={() => {
-              console.log("handle editing mode")
-            }}
-            key={task._id}>{task.name}</li>;
+            return (
+              <li onClick={() => {}} key={task._id}>
+                {task.name}
+              </li>
+            );
           })}
         </div>
       </div>

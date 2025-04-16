@@ -3,8 +3,10 @@ const Schema = mongoose.Schema;
 
 const BoardSchema = new Schema({
   name: String,
-  user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  projects: [{type: mongoose.Schema.Types.ObjectId, ref: "Project"}]
-})
+  dueDate: String,
+  assignedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
+});
 
-module.exports = mongoose.model("Board", BoardSchema)
+module.exports = mongoose.model("Board", BoardSchema);
