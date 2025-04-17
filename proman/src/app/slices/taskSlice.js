@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
+const PORT = import.meta.env.VITE_PORT;
 
 export const fetchTasks = createAsyncThunk(
   "task/fetchTasks",
   async (projectId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/projects/${projectId}/tasks`
+        `${apiUrl}${PORT}/projects/${projectId}/tasks`
       );
       return response.data;
     } catch (err) {
@@ -25,7 +27,7 @@ export const postTask = createAsyncThunk(
     };
     try {
       const response = await axios.post(
-        `http://localhost:8000/projects/${projId}/tasks`,
+        `${apiUrl}${PORT}/projects/${projId}/tasks`,
         body
       );
       return response.data;
@@ -39,9 +41,7 @@ export const deleteTask = createAsyncThunk(
   "task/deleteTask",
   async (taskId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8000/tasks/${taskId}`
-      );
+      const response = await axios.delete(`${apiUrl}${PORT}/tasks/${taskId}`);
       return response.data;
     } catch (err) {
       return err;
@@ -57,7 +57,7 @@ export const updateTask = createAsyncThunk(
       text,
     };
     try {
-      const response = axios.put(`http://localhost:8000/tasks/${taskId}`, body);
+      const response = axios.put(`${apiUrl}${PORT}/tasks/${taskId}`, body);
       return response.data;
     } catch (err) {
       return err;

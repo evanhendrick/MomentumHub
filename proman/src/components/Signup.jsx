@@ -1,7 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { DevTool } from "@hookform/devtools";
 import { useDispatch, useSelector } from "react-redux";
 import { submitSignin } from "../app/slices/authSlice";
 import { Link } from "react-router-dom";
@@ -10,7 +9,7 @@ import { authActions } from "../app/slices/authSlice";
 
 export default function Signup() {
   const form = useForm();
-  const { register, control, handleSubmit, formState, clearErrors } = form;
+  const { register, handleSubmit, formState, clearErrors } = form;
   const { errors } = formState;
 
   const authState = useSelector((state) => {
@@ -38,15 +37,14 @@ export default function Signup() {
   };
 
   const handleClearErrors = () => {
-    if(authState.error){
-
-      clearErrors("username")
-      clearErrors("password")
-      dispatch(authActions.resetError())
+    if (authState.error) {
+      clearErrors("username");
+      clearErrors("password");
+      dispatch(authActions.resetError());
     } else {
-      console.log("no errors to clear")
+      console.log("no errors to clear");
     }
-  }
+  };
 
   return (
     <div className="container">
@@ -65,7 +63,7 @@ export default function Signup() {
             noValidate
           >
             <h5>Login:</h5>
-            
+
             <div className="mb-3">
               <label htmlFor="username" className="form-label">
                 Username
@@ -89,7 +87,7 @@ export default function Signup() {
                   },
                 })}
                 onChange={(e) => {
-                  register("username").onChange(e)
+                  register("username").onChange(e);
                   handleClearErrors();
                 }}
               ></input>
@@ -113,15 +111,17 @@ export default function Signup() {
                   },
                 })}
                 onChange={(e) => {
-                  register("password").onChange(e)
-                  console.log(e.target.value)
+                  register("password").onChange(e);
+                  console.log(e.target.value);
                   handleClearErrors();
                 }}
               ></input>
               {errors.password ? (
                 <p className="alert alert-danger">{errors.password?.message}</p>
               ) : null}
-              {authState.error ? <p className="alert alert-danger">{authState.error}</p> : null}
+              {authState.error ? (
+                <p className="alert alert-danger">{authState.error}</p>
+              ) : null}
             </div>
 
             <button className="btn btn-success">Submit</button>

@@ -43,7 +43,7 @@ export const ProjectsView = () => {
 
   const handlePostProject = async () => {
     if (_.isEmpty(projectText)) {
-      alert("project must have a name")
+      alert("project must have a name");
     } else {
       const data = {
         projectText: projectText,
@@ -188,7 +188,7 @@ export const ProjectsView = () => {
                       <hr />
                       <TaskView proj={proj} />
                       <hr />
-                      <ProjectTimer proj={proj}/>
+                      <ProjectTimer proj={proj} />
                     </div>
                   </div>
                 </div>
@@ -201,9 +201,8 @@ export const ProjectsView = () => {
   } else {
     return (
       <div className="d-flex justify-content-center align-items-center">
-        <div className="spinner-border text-primary" role="status">
-        </div>
-          <span className="text-primary">Loading...</span>
+        <div className="spinner-border text-primary" role="status"></div>
+        <span className="text-primary">Loading...</span>
       </div>
     );
   }

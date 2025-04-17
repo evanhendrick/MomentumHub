@@ -1,12 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
+const PORT = import.meta.env.VITE_PORT;
+
+console.log("vite api url", `${apiUrl}${PORT}`);
 
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
   async (boardId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/boards/${boardId}/projects`
+        `${apiUrl}${PORT}/boards/${boardId}/projects`
       );
       return response.data;
     } catch (err) {
@@ -23,7 +27,7 @@ export const postProject = createAsyncThunk(
     };
     try {
       const response = await axios.post(
-        `http://localhost:8000/board/${data.boardId}/projects`,
+        `${apiUrl}${PORT}/board/${data.boardId}/projects`,
         body
       );
       return response.data;
@@ -38,7 +42,7 @@ export const deleteProject = createAsyncThunk(
   async (projId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/projects/${projId}`
+        `${apiUrl}${PORT}/projects/${projId}`
       );
       return response.data;
     } catch (err) {
@@ -56,7 +60,7 @@ export const updateProject = createAsyncThunk(
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/projects/${projId}`,
+        `${apiUrl}${PORT}/projects/${projId}`,
         body
       );
       return response.data;
@@ -75,7 +79,7 @@ export const projectTimerStart = createAsyncThunk(
       toggleId,
     };
     try {
-      const response = await axios.post("http://localhost:8000/start", body);
+      const response = await axios.post(`${apiUrl}${PORT}/start`, body);
       return response.data;
     } catch (err) {
       return err;
@@ -92,8 +96,8 @@ export const projectTimerStop = createAsyncThunk(
       timeEntryId,
     };
     try {
-      const response = await axios.patch("http://localhost:8000/stop", body);
-      return response.data
+      const response = await axios.patch(`${apiUrl}${PORT}/stop`, body);
+      return response.data;
     } catch (err) {
       return err;
     }

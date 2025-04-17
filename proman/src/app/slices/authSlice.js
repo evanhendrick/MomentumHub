@@ -1,20 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
+const PORT = import.meta.env.VITE_PORT;
+
+// console.log("vite api url", `${apiUrl}${PORT}/signup`)
 
 export const submitSignin = createAsyncThunk(
   "auth/submitSignin",
   async (body, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:8000/signin", body);
+      const response = await axios.post(`${apiUrl}${PORT}/signin`, body);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("currentUser", JSON.stringify(response.data.user));
-      console.log("submit signin failed>", response.data)
       return response.data;
     } catch (err) {
       console.log("Sign-in error:", err.response.data.error);
 
       if (axios.isAxiosError(err) && err.response) {
-        console.log("Axios err:", err.response.data.error)
+        console.log("Axios err:", err.response.data.error);
         return rejectWithValue(err.response.data.error || "Sign-in failed");
       }
 
@@ -27,26 +30,10 @@ export const submitSignup = createAsyncThunk(
   "auth/submitSignup",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:8000/signup", data);
+      const response = await axios.post(`${apiUrl}${PORT}/signup`, data);
       return response.data;
     } catch (err) {
       return rejectWithValue(err);
-    }
-  }
-);
-
-export const protectedFetch = createAsyncThunk(
-  "auth/protectedFetch",
-  async (token) => {
-    try {
-      const response = await axios.get("http://localhost:8000/protected", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (err) {
-      return err;
     }
   }
 );
@@ -63,8 +50,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     resetError: (state) => {
-      state.error = null
-    }
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -77,14 +64,8 @@ const authSlice = createSlice({
         state.currentUser = action.payload.user;
       })
       .addCase(submitSignin.rejected, (state, action) => {
-        // const resErr = action.payload.response.data.error;
-        // const resErr = action.payload
-        console.log("submitSignin.rejected", action)
         state.isAuthenticated = false;
         state.error = action.payload;
-      })
-      .addCase(protectedFetch.fulfilled, (state, action) => {
-        state.data = action.payload;
       })
       .addCase(submitSignup.fulfilled, (state, action) => {
         state.error = action.payload.message;
@@ -96,5 +77,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-// module.exports.authActions = authSlice.actions
-export const authActions = authSlice.actions
+export const authActions = authSlice.actions;

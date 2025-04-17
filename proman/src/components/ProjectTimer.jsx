@@ -94,7 +94,6 @@ export const ProjectTimer = (props) => {
         </div>
 
         <div>
-          {timeEntryId ? <div>{timeEntryId}</div> : null}
           {timeEntryData ? (
             <div className="mb-1">
               <strong>Clocked in at:</strong>{" "}

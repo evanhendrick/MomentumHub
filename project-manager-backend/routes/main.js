@@ -20,7 +20,7 @@ const Project = require("../models/project");
 const Task = require("../models/task");
 const project = require("../models/project");
 const { hashPassword } = require("../utils/hash.js");
-const { validatePassword } = require("../utils/validate.js")
+const { validatePassword } = require("../utils/validate.js");
 
 router.use(passport.initialize());
 
@@ -31,14 +31,13 @@ passport.use(
 
     if (!user) {
       return done(null, false, { message: "Username invalid" });
-    } 
-      const isValidPassword = validatePassword(password, user.salt)
-
-    if(isValidPassword === user.hash){
-      console.log("user validated!")
-      return done(null, user)
     }
-    else {
+    const isValidPassword = validatePassword(password, user.salt);
+
+    if (isValidPassword === user.hash) {
+      console.log("user validated!");
+      return done(null, user);
+    } else {
       return done(null, false, { message: "Password incorrect" });
     }
   })
@@ -46,7 +45,7 @@ passport.use(
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: "bananas",
+  secretOrKey: process.env.JWT_SECRET,
 };
 
 passport.use(
@@ -69,7 +68,8 @@ const tokenForUser = (user) => {
     exp: Math.round(Date.now() / 1000 + 5 * 60 * 60),
   };
 
-  return jwt.encode(payload, "bananas");
+  // move into .env
+  return jwt.encode(payload, process.env.JWT_SECRET);
 };
 
 const requireSignin = (request, response, next) => {
@@ -132,7 +132,6 @@ router.post("/save-data", async (request, response) => {
 });
 
 router.get("/boards", requireAuth, async (request, response) => {
-
   let board = await Board.find({ user: request.query.userId }).populate(
     "projects"
   );

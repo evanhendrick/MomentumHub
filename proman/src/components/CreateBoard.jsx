@@ -1,18 +1,12 @@
 import React from "react";
-// import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPostNewBoard, fetchBoards } from "../app/slices/boardSlice";
-import { DevTool } from "@hookform/devtools";
 import { CiCirclePlus } from "react-icons/ci";
 import { useForm } from "react-hook-form";
 
 export const CreateBoard = () => {
-  // const [isVisible, setIsVisible] = useState(false);
-  // const [boardName, setBoardName] = useState("");
-  // const [date, setDate] = useState("");
-
   const form = useForm();
-  const { register, reset, control, handleSubmit, formState } = form;
+  const { register, reset, handleSubmit, formState } = form;
   const { errors } = formState;
 
   const authState = useSelector((state) => {
@@ -63,11 +57,7 @@ export const CreateBoard = () => {
               })}
             ></input>
             {errors.boardname ? (
-              <p
-                className="alert alert-danger"
-              >
-                {errors.boardname?.message}
-              </p>
+              <p className="alert alert-danger">{errors.boardname?.message}</p>
             ) : null}
           </div>
           <div className="mb-3">
@@ -84,7 +74,6 @@ export const CreateBoard = () => {
             ></input>
           </div>
           <button className="btn btn-primary">Create Board</button>
-          <DevTool control={control} />
         </form>
       </div>
     </div>
