@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
-const PORT = import.meta.env.VITE_PORT;
+// const PORT = import.meta.env.VITE_PORT;
 
 // console.log("vite api url", `${apiUrl}${PORT}/signup`)
 
@@ -9,7 +9,7 @@ export const submitSignin = createAsyncThunk(
   "auth/submitSignin",
   async (body, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${apiUrl}${PORT}/signin`, body);
+      const response = await axios.post(`${apiUrl}/signin`, body);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("currentUser", JSON.stringify(response.data.user));
       return response.data;
@@ -30,7 +30,7 @@ export const submitSignup = createAsyncThunk(
   "auth/submitSignup",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${apiUrl}${PORT}/signup`, data);
+      const response = await axios.post(`${apiUrl}/signup`, data);
       return response.data;
     } catch (err) {
       return rejectWithValue(err);

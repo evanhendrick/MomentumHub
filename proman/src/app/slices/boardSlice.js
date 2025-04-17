@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
-const PORT = import.meta.env.VITE_PORT;
+// const PORT = import.meta.env.VITE_PORT;
 
 export const fetchBoards = createAsyncThunk(
   "board/fetchBoards",
   async (userId) => {
     let token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${apiUrl}${PORT}/boards`, {
+      const response = await axios.get(`${apiUrl}/boards`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -25,7 +25,7 @@ export const fetchBoard = createAsyncThunk(
   "board/fetchBoard",
   async (boardId) => {
     try {
-      const response = await axios.get(`${apiUrl}${PORT}/boards/${boardId}`);
+      const response = await axios.get(`${apiUrl}/boards/${boardId}`);
       return response.data;
     } catch (err) {
       return err;
@@ -42,7 +42,7 @@ export const fetchPostNewBoard = createAsyncThunk(
         userId,
         date: date,
       };
-      const response = await axios.post(`${apiUrl}${PORT}/save-data`, data);
+      const response = await axios.post(`${apiUrl}/save-data`, data);
       return response.data;
     } catch (err) {
       return err;
@@ -59,7 +59,7 @@ export const updateBoard = createAsyncThunk(
     };
     try {
       const response = await axios.put(
-        `${apiUrl}${PORT}/board/${boardId}`,
+        `${apiUrl}/board/${boardId}`,
         body
       );
       return response.data;
@@ -73,7 +73,7 @@ export const deleteBoard = createAsyncThunk(
   "board/deleteBoard",
   async (boardId) => {
     try {
-      const response = await axios.delete(`${apiUrl}${PORT}/boards/${boardId}`);
+      const response = await axios.delete(`${apiUrl}/boards/${boardId}`);
       return response.data;
     } catch (err) {
       return err;
