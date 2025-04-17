@@ -2,10 +2,8 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BoardStyle } from "./BoardStyle";
 import App from "../App";
-import Login from "./Signup";
-import BoardsView from "./BoardsView";
 import Signup from "./Signup";
-import { NewUser } from "./newUser";
+import { NewUser } from "./NewUser";
 
 export const Nav = () => {
 
