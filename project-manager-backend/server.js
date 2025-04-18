@@ -16,9 +16,13 @@ mongoose
     console.log(err);
   });
 
+  const allowedOrigins = ["https://momentumhub.onrender.com"]
+
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigins
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
