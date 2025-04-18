@@ -18,11 +18,20 @@ mongoose
 
   const allowedOrigins = ["https://momentumhub.onrender.com"]
 
+  const corsOptions = {
+    origin: "https://momentumhub.onrender.com",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type"]
+  }
+
+  // {
+  //   // origin: allowedOrigins
+    
+  // }
+
 const app = express();
 
-app.use(cors({
-  origin: allowedOrigins
-}));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
