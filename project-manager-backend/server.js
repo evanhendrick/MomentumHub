@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 8000
 
+const mongoUri = process.env.MONGODB_URI
+console.log("MONGODB URI", mongoUri)
+
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
