@@ -3,10 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT || 8000;
 
-const mongoUri = process.env.MONGODB_URI
-console.log("MONGODB URI", mongoUri)
+const mongoUri = process.env.MONGODB_URI;
+console.log("MONGODB URI", mongoUri);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -20,22 +20,30 @@ mongoose
     console.log(err);
   });
 
-  const allowedOrigins = ["https://momentumhub.onrender.com"]
+const allowedOrigins = ["https://momentumhub.onrender.com"];
 
-  const corsOptions = {
-    origin: "https://momentumhub.onrender.com",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type"]
-  }
+const corsOptions = {
+  origin: "https://momentumhub.onrender.com",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type"],
+};
 
-  // {
-  //   // origin: allowedOrigins
-    
-  // }
+// {
+//   // origin: allowedOrigins
+
+// }
 
 const app = express();
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://momentumhub.onrender.com");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, PATCH");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
