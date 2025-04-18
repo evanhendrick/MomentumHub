@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const PORT = process.env.PORT || 8000
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -39,6 +40,6 @@ const mainRoutes = require("./routes/main");
 
 app.use(mainRoutes);
 
-app.listen(8000, () => {
-  console.log("Node.js is listening on port: " + 8000);
+app.listen(PORT, () => {
+  console.log("Node.js is listening on port: " + PORT);
 });
