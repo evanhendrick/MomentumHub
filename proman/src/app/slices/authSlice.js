@@ -3,8 +3,6 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 // const PORT = import.meta.env.VITE_PORT;
 
-// console.log("vite api url", `${apiUrl}${PORT}/signup`)
-
 export const submitSignin = createAsyncThunk(
   "auth/submitSignin",
   async (body, { rejectWithValue }) => {
@@ -56,8 +54,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(submitSignin.fulfilled, (state, action) => {
-        const user = action.payload.user;
-        console.log(".addCase", user);
+        // const user = action.payload.user;
 
         state.isAuthenticated = "Authenticated";
         state.error = null;

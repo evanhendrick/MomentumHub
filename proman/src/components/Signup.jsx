@@ -41,8 +41,6 @@ export default function Signup() {
       clearErrors("username");
       clearErrors("password");
       dispatch(authActions.resetError());
-    } else {
-      console.log("no errors to clear");
     }
   };
 
@@ -112,7 +110,6 @@ export default function Signup() {
                 })}
                 onChange={(e) => {
                   register("password").onChange(e);
-                  console.log(e.target.value);
                   handleClearErrors();
                 }}
               ></input>

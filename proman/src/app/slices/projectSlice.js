@@ -3,15 +3,11 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 // const PORT = import.meta.env.VITE_PORT;
 
-console.log("vite api url", `${apiUrl}`);
-
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
   async (boardId) => {
     try {
-      const response = await axios.get(
-        `${apiUrl}/boards/${boardId}/projects`
-      );
+      const response = await axios.get(`${apiUrl}/boards/${boardId}/projects`);
       return response.data;
     } catch (err) {
       return err;
@@ -41,9 +37,7 @@ export const deleteProject = createAsyncThunk(
   "projects/deleteProject",
   async (projId) => {
     try {
-      const response = await axios.delete(
-        `${apiUrl}/projects/${projId}`
-      );
+      const response = await axios.delete(`${apiUrl}/projects/${projId}`);
       return response.data;
     } catch (err) {
       return err;
@@ -59,10 +53,7 @@ export const updateProject = createAsyncThunk(
     };
 
     try {
-      const response = await axios.put(
-        `${apiUrl}/projects/${projId}`,
-        body
-      );
+      const response = await axios.put(`${apiUrl}/projects/${projId}`, body);
       return response.data;
     } catch (err) {
       return err;
