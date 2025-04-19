@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 8000;
 
 const mongoUri = process.env.MONGODB_URI;
-console.log("MONGODB URI", mongoUri);
+// console.log("MONGODB URI", mongoUri);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -20,22 +20,8 @@ mongoose
     console.log(err);
   });
 
-const allowedOrigins = ["https://momentumhub.onrender.com"];
-
-const corsOptions = {
-  origin: "https://momentumhub.onrender.com",
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type"],
-};
-
-// {
-//   // origin: allowedOrigins
-
-// }
-
 const app = express();
 
-// app.use(cors(corsOptions));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "https://momentumhub.onrender.com");
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, PATCH");
